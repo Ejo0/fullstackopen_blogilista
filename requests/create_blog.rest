@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZvbyIsImlkIjoiNjI1ZDdkNzcyY2VjM2I4MjhlNmU2ZjMwIiwiaWF0IjoxNjUwMzQ3Njc1fQ.9IWNt34Owt9vOTLxx8BmxApg1yoTnskcRQwY35Zldj0
 
 {
-    "title": "Hiihtovaellus lapissa",
+    "title": "Blogin lisäys tokenilla",
     "author": "Foo",
     "url": "foo.bar",
-    "likes": 1
+    "likes": 3
 }
