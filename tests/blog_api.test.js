@@ -1,9 +1,6 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const {
-    update
-} = require('../models/blog')
 const api = supertest(app)
 const Blog = require('../models/blog')
 
