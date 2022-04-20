@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const jwt = require('jsonwebtoken')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+let token = null
 
 const initialBlogs = [{
         _id: '5a422aa71b54a676234d17f8',
@@ -23,6 +27,20 @@ const initialBlogs = [{
 ]
 
 beforeEach(async () => {
+
+    const user = new User({
+        username: 'doe',
+        name: 'john doe',
+        password: 'salaus'
+    })
+
+    const savedUser = await user.save()
+    token = jwt.sign({
+        username: savedUser.username,
+        id: savedUser.id
+    }, process.env.SECRET_KEY)
+
+    initialBlogs[0].user = savedUser.id
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
 })
@@ -67,6 +85,7 @@ describe('post:', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'Bearer ' + token)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -87,6 +106,7 @@ describe('post:', () => {
 
         const createdBlog = await api
             .post('/api/blogs')
+            .set('Authorization', 'Bearer ' + token)
             .send(newBlog)
             .expect(201)
 
@@ -100,8 +120,22 @@ describe('post:', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'Bearer ' + token)
             .send(newBlog)
             .expect(400)
+    })
+
+    test('post without token returns 401', async () => {
+        const newBlog = {
+            title: 'a blog without creator',
+            author: 'John Doe',
+            url: 'nn.n'
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
     })
 })
 
@@ -110,6 +144,7 @@ describe('delete', () => {
     test('removes a blog with correct id', async () => {
         await api
             .delete('/api/blogs/5a422aa71b54a676234d17f8')
+            .set('Authorization', 'Bearer ' + token)
 
         const response = await api.get('/api/blogs')
         const ids = response.body.map(blog => blog.id)
@@ -121,6 +156,7 @@ describe('delete', () => {
     test('with unvalid id returns correct error', async () => {
         const response = await api
             .delete('/api/blogs/nnn')
+            .set('Authorization', 'Bearer ' + token)
 
         expect(response.status).toBe(400)
         expect(response.body.error).toBe('malformatted id')
@@ -134,8 +170,6 @@ describe('update', () => {
             .send({
                 likes: 6
             })
-
-
 
         expect(updatedBlog.body.likes).toBe(6)
 
