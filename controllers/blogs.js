@@ -6,7 +6,10 @@ const User = require('../models/user')
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({})
-    .populate('user', { username: 1, name: 1 })
+    .populate('user', {
+      username: 1,
+      name: 1
+    })
   response.json(blogs)
 })
 
@@ -14,7 +17,9 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body
   const user = request.user
   if (!user) {
-    return response.status(401).json({ error: 'token missing or invalid' })
+    return response.status(401).json({
+      error: 'token missing or invalid'
+    })
   }
 
   const blog = new Blog({
@@ -26,7 +31,10 @@ blogsRouter.post('/', async (request, response) => {
   })
 
   const savedBlog = await blog.save()
-  await savedBlog.populate('user', {username: 1, name: 1})
+  await savedBlog.populate('user', {
+    username: 1,
+    name: 1
+  })
 
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
@@ -37,11 +45,15 @@ blogsRouter.post('/', async (request, response) => {
 blogsRouter.delete('/:id', async (request, response) => {
   const user = request.user
   if (!user) {
-    return response.status(401).json({ error: 'token missing or invalid' })
+    return response.status(401).json({
+      error: 'token missing or invalid'
+    })
   }
   const blog = await Blog.findById(request.params.id)
   if (user.id !== blog.user.toString()) {
-    return response.status(401).json({ error: 'no rights to remove blog'})
+    return response.status(401).json({
+      error: 'no rights to remove blog'
+    })
   }
 
   await Blog.findByIdAndRemove(request.params.id)
@@ -49,11 +61,20 @@ blogsRouter.delete('/:id', async (request, response) => {
 })
 
 blogsRouter.put('/:id/like', async (request, response) => {
-  const { likes } = request.body
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id,
-    { likes },
-    { new: true, runValidators: true, context: 'query' })
-    .populate('user', { username: 1, name: 1 })
+  const {
+    likes
+  } = request.body
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, {
+      likes
+    }, {
+      new: true,
+      runValidators: true,
+      context: 'query'
+    })
+    .populate('user', {
+      username: 1,
+      name: 1
+    })
 
   response.json(updatedBlog)
 })

@@ -6,8 +6,7 @@ describe('dummy', () => {
     })
 })
 
-const listWithmManyBlogs = [
-    {
+const listWithmManyBlogs = [{
         _id: '5a422aa71b54a676234d17f8',
         title: 'Go To Statement Considered Harmful',
         author: 'Edsger W. Dijkstra',

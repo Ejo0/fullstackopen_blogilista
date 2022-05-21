@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt')
-const { default: mongoose } = require('mongoose')
+const {
+    default: mongoose
+} = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
@@ -35,7 +37,7 @@ describe('when there is initially one user at db', () => {
             .send(newUser)
             .expect(201)
             .expect('Content-Type', /application\/json/)
-        
+
         const usersAtEnd = await usersAtDb()
         expect(usersAtEnd).toHaveLength(2)
 
@@ -55,7 +57,7 @@ describe('when there is initially one user at db', () => {
             .send(newUser)
             .expect(400)
             .expect('Content-Type', /application\/json/)
-        
+
         expect(result.body.error).toContain('username must be unique')
 
         const usersAtEnd = await usersAtDb()
